@@ -1,0 +1,59 @@
+<?php
+
+module_load_include('inc', 'os2forms_webform_repo', 'includes/os2forms_webform_repo.utils');
+
+/**
+ * Implements hook_node_load().
+ *
+ * Appends the information if this webform is meant to be readonly.
+ */
+function os2forms_webform_repo_node_load($nodes, $types) {
+  if (in_array('webform', $types)) {
+    foreach ($nodes as $node) {
+      $webformSettings = os2forms_webform_repo_get_webform_settings($node->nid);
+      if ($webformSettings && $webformSettings->readonly) {
+        $nodes[$node->nid]->readonly = $webformSettings->readonly;
+      }
+      else {
+        $nodes[$node->nid]->readonly = 0;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Adds OS2Forms webform repo settings.
+ */
+function os2forms_webform_repo_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id === 'webform_configure_form') {
+    $webformSettings = os2forms_webform_repo_get_webform_settings($form['nid']['#value']);
+
+    $form['os2forms_webform_repo_fs'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('OS2Forms webform repo settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 30
+    );
+
+    $form['os2forms_webform_repo_fs']['os2forms_webform_repo_readonly'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Readonly'),
+      '#description' => t('After cloning on remote installation webform is alterable or is readonly.'),
+      '#default_value' => ($webformSettings) ? $webformSettings->readonly : 0,
+    );
+
+    $form['#submit'][] = 'os2forms_webform_repo_webform_configuration_save';
+  }
+}
+
+/**
+ * Saves OS2Forms webform repo settings.
+ */
+function os2forms_webform_repo_webform_configuration_save($form, &$form_state) {
+  $nid = $form['nid']['#value'];
+  $readonly = $form_state['values']['os2forms_webform_repo_readonly'];
+  os2forms_webform_repo_insert_update_webform_settings($nid, $readonly);
+}

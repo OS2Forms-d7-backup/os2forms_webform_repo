@@ -1,0 +1,106 @@
+<?php
+
+/*
+ * Implements hook_services_resources().
+ */
+function webform_node_export_service_services_resources() {
+
+  // Include our resources.
+  require_once("resources/webform_node_export_resource.inc");
+
+  // Add the resources.
+  $resources = array();
+  $resources += _webform_node_export_resource_definition();
+  return $resources;
+}
+
+
+/**
+ * Determine whether the current user can access a node resource.
+ *
+ * @param $op
+ *   One of view, update, create, delete per node_access().
+ * @param $args
+ *   Resource arguments passed through from the original request.
+ * @param $load_node
+ *   Function that loads the node.
+ *
+ * @return bool
+ *
+ * @see node_access()
+ */
+function webform_node_export_service_resource_access($op = 'view', $type = '', $args = array()) {
+  $node = null;
+
+  if (empty($args[0])) {
+    return services_error(t('Must provide a uuid.'), 404);
+  }
+  else if (is_array($args[0]) || is_object($args[0])) {
+    $node = (object)$args[0];
+  }
+  else if (in_array(gettype($args[0]), array('string', 'integer'))) {
+    $node = webform_node_export_service_resource_load($args[0]);
+  }
+
+  if ($node) {
+    // Return the node resource access.
+    $node->type = $type;
+    module_load_include('inc', 'services', 'resources/node_resource');
+    return _node_resource_access($op, array($node));
+  }
+  else {
+
+    // Return a 404.
+    return services_error(t('Webform @uuid could not be found', array('@uuid' => $args[0])), 404);
+  }
+}
+
+/**
+ * Returns a single node resource as exported node with serialize format.
+ *
+ * @param $entity
+ *   UUID or the whole object of the media we want to return.
+ * @return
+ *   Serialized node object or empty array.
+ *
+ * @see node_export()
+ */
+function webform_node_export_service_get_resource($entity) {
+  $resource = array();
+  if (gettype($entity) === 'string') {
+    $entity = webform_node_export_service_resource_load($entity);
+  }
+  if ($entity) {
+    // Exporting with serialize formatter.
+    $export = node_export(intval($entity->nid), 'serialize');
+
+    if (!empty($export['output'])) {
+      $resource = $export['output'];
+    }
+  }
+
+  // Return the resource.
+  return $resource;
+}
+
+/**
+ * Load a resource provided its uuid.  Much like node_load, but with uuid's...
+ *
+ * @param type $uuid
+ * @return type
+ */
+function webform_node_export_service_resource_load($uuid, $reset = FALSE) {
+  $webforms = &drupal_static(__FUNCTION__);
+  if ($reset || empty($webforms[$uuid])) {
+    $entity = entity_uuid_load('node', array($uuid), array(), $reset);
+    $webforms[$uuid] = reset($entity);
+  }
+  return empty($webforms[$uuid]) ? NULL : $webforms[$uuid];
+}
+
+/**
+ * Implements hook_node_submit
+ */
+function webform_node_export_service_node_submit($node, $form, &$form_state) {
+  $break = TRUE;
+}

@@ -1,0 +1,7 @@
+name = OS2Forms webform repo
+description =
+package = OS2Forms
+dependencies[] = webform_node_export_service
+
+version = "7.x-1.0"
+core = "7.x"

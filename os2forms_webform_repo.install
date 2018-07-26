@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function os2forms_webform_repo_schema() {
+  $schema['os2forms_webform_repo_webforms'] = array(
+    'description' => 'Database containing the settings of os2forms_webform_repo.',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The node identifier of webform.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'readonly' => array(
+        'description' => 'Shows webform is readonly, 0 - no, 1 - yes.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+
+  return $schema;
+}
