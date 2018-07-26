@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @file
+ * Code for the OS2Forms webform repo feature.
+ */
+
+include_once 'os2forms_webform_repo.features.inc';
+
 module_load_include('inc', 'os2forms_webform_repo', 'includes/os2forms_webform_repo.utils');
 
 /**

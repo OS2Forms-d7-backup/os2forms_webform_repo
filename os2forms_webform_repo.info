@@ -1,7 +1,21 @@
 name = OS2Forms webform repo
-description =
+description = Stored webform repo related functionality and settings
+core = 7.x
 package = OS2Forms
+version = 7.x-1.0
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = node
+dependencies[] = node_export
+dependencies[] = rest_server
+dependencies[] = services
+dependencies[] = services_basic_auth
+dependencies[] = user
 dependencies[] = webform_node_export_service
-
-version = "7.x-1.0"
-core = "7.x"
+features[ctools][] = services:services:3
+features[features_api][] = api:2
+features[services_endpoint][] = os2forms_webform_repo
+features[user_permission][] = access user profiles
+features[user_permission][] = create webform content
+features[user_permission][] = use PHP to import nodes
+features[user_role][] = OS2Forms webform repo user
