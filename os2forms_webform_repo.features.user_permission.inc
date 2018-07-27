@@ -29,6 +29,16 @@ function os2forms_webform_repo_user_default_permissions() {
     'module' => 'node',
   );
 
+  // Exported permission: 'export nodes'.
+  $permissions['export nodes'] = array(
+    'name' => 'export nodes',
+    'roles' => array(
+      'OS2Forms webform repo user' => 'OS2Forms webform repo user',
+      'administrator' => 'administrator',
+    ),
+    'module' => 'node_export',
+  );
+
   // Exported permission: 'use PHP to import nodes'.
   $permissions['use PHP to import nodes'] = array(
     'name' => 'use PHP to import nodes',
